@@ -1,0 +1,41 @@
+-- Триггер. Заполним столбец tax_income в таблице income
+
+
+USE fns;
+
+SELECT
+	*
+FROM
+	income;
+
+SHOW TRIGGERS;
+
+DELIMITER //
+CREATE TRIGGER new_insert BEFORE
+INSERT
+	ON
+	income FOR EACH ROW BEGIN IF NEW.tax_income IS NULL THEN SIGNAL SQLSTATE '45000' SET
+	MESSAGE_TEXT = 'INSERT CANCELED';
+END IF;
+END //
+
+DELIMITER //
+CREATE TRIGGER new_update BEFORE
+UPDATE
+	ON
+	income FOR EACH ROW BEGIN IF NEW.tax_income IS NULL THEN SIGNAL SQLSTATE '45000' SET
+	MESSAGE_TEXT = 'INSERT CANCELED';
+END IF;
+END //
+
+
+
+DESC income;
+
+UPDATE income
+SET tax_income = NULL 
+WHERE id = 9;
+
+UPDATE income
+SET tax_income = 12000 
+WHERE id = 9;
